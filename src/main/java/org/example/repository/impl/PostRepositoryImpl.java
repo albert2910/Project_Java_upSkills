@@ -4,13 +4,10 @@ import org.example.advice.ExceptionHandler;
 import org.example.entities.Post;
 import org.example.repository.PostRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PostRepositoryImpl implements PostRepository {
-    private final HashMap<UUID, Post> postStorage = new HashMap<>();
+    private final Map<UUID, Post> postStorage = new HashMap<>();
 
     @Override
     public List<Post> findAll() {
@@ -25,7 +22,16 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Post save(Post post) {
-        return postStorage.put(post.getId(), post);
+        if (post.getId() == null) {
+            Post newPost = new Post.Builder()
+                    .id(UUID.randomUUID())
+                    .content(post.getContent())
+                    .build();
+            postStorage.put(newPost.getId(), newPost);
+            return newPost;
+        }
+        postStorage.put(post.getId(), post);
+        return post;
     }
 
     @Override
